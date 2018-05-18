@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>我的诗集</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./dist/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	 <style>
+        .logo {
+            width: 50%;
+            height: 350px;
+            margin: auto;
+        }
+		 .name {
+            text-align: center;
+            font-size: 45px;
+            text-shadow: 3px 5px grey, 1px 1px #333;
+        }
+        .img {
+            width: 40%;
+            height: 50%;
+            margin: auto;
+            margin-top: 38px;
+        }
+
+        .img img {
+            width: 100%;
+            height: 100%;
+        }
+      
+        p{
+            text-indent:2em;
+            font-size: 30px;
+        }
+        .contenner{
+            height: 1200px;
+        }
+        
+    </style>
+</head>
+
+<body>
+
+    <script type="text/javascript" src="./dist/neb/nebulas.js"></script>
+    <script type="text/javascript" src="./dist/neb/nebPay.js"></script>
+    <script type="text/javascript" src="./dist/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="./dist/bootstrap/js/bootstrap.min.js"></script>
+
+
+    <div class="container contenner">
+		<div class="logo">
+			<div class="name">SUPER DICTIONARY</div>
+			<div class="img logo_rotate">
+				<img src="img/logo.png" alt="星云链">
+			</div>
+		</div>
+        <div class="row clearfix">
+            <div class="col-md-12 column">
+                <div class="col-md-6 column">
+					<div class="container-fluid">
+                        <div class="row-fluid">
+                            <div class="span12">
+                                 <span class="label">分隔符</span>
+                                <div class="list-group">
+                                    <a class="list-group-item active">查询诗词</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+					<div class="input-group" style="margin-right:15px;margin-left:15px">
+						<input type="text" class="form-control" placeholder="请输入诗词名称" id=search_title />
+						<span class="input-group-btn">
+							<button class="btn btn-info btn-search" id=search>查找</button>
+						</span>
+					</div>
+					<div class="row clearfix"></div>
+                    <div class="col-md-12">
+                        <div style="text-align: center;padding-top: 18px;margin-top: 14px;"></div>
+                        <h4 id=title style="text-align: center;color: blue;"></h4>
+                        <div id=content style="margin-top: 20px;"></div>
+
+                        <div id=author style="text-align: right;padding-top: 20px;margin: 2px;"></div>
+                    </div>
+					
+				</div>
+
+				
+                
+
+    			<div class="col-md-6 column">
+    				<div class="container-fluid">
+                        <div class="row-fluid">
+                            <div class="span12">
+                                 <span class="label">分隔符</span>
+                                <div class="list-group">
+                                    <a class="list-group-item active">诗词发布</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+    				<div class="input-group" style="margin-right:15px;margin-left:15px">
+    					<span class="input-group-addon ">标题</span>
+    					<input type="text" class="form-control col-md-7" placeholder="输入诗词名称" id=input_title>
+                        <span class="input-group-addon ">作者</span>
+                        <input type="text" class="form-control col-md-5" placeholder="输入作者" id=input_author>
+    				</div>
+    				<div class="input-group" style="margin-right:15px;margin-left:15px;margin-top:20px">
+    					<span class="input-group-addon">内容</span>
+    					<textarea type="text" class="form-control" rows="8" placeholder="输入诗词内容" id=input_content></textarea>
+    				</div>
+    				<div  style="text-align: right;margin-top:20px;margin-right:15px">
+    						<button class="btn btn-info" id=post>提交</button>
+    				</div>
+    			</div>
+
+            </div>
+        </div>
+    </div>
+</body>
+
+
+<script>
+    "use strict";
+    var dappContactAddress = "n1g7U2eDZMMBGfCDqKDwUB6eYkZpzuk45Hq";
+    var nebulas = require("nebulas"), Account = nebulas.Account, neb = new nebulas.Neb();
+    neb.setRequest(new nebulas.HttpRequest("https://testnet.nebulas.io"))
+
+
+    var NebPay = require("nebpay");     //https://github.com/nebulasio/nebPay
+    var nebPay = new NebPay();
+    var serialNumber
+
+    $("#search").click(function () {
+        if (!$("#search_title").val()) {
+            alert('搜索标题不能为空');
+            return;
+        }
+
+        $('#content').text("");
+        var from = Account.NewAccount().getAddressString();
+        var value = "0";
+        var nonce = "0"
+        var gas_price = "1000000"
+        var gas_limit = "2000000"
+        var callFunction = "get";
+        var callArgs = "[\"" + $("#search_title").val() + "\"]";
+        console.log(callArgs);
+        var contract = {
+            "function": callFunction,
+            "args": callArgs
+        }
+
+
+        neb.api.call(from, dappContactAddress, value, nonce, gas_price, gas_limit, contract).then(function (resp) {
+            var result = resp.result;
+            
+            if (result === 'null') {
+                $('#content').text("没有发现该标题诗词，你可以立即写一篇！");
+                $('#title').text("");
+                $('#author').text("");
+                return;
+            }
+            result = JSON.parse(result);
+            $("#title").text(result.title);
+            $('#content').text(result.content);
+            $('#author').text("作者：" + result.author.split('_')[1]);
+
+        }).catch(function (err) {
+            console.log("error :" + err.message);
+
+        })
+
+    })
+
+
+
+    $('#post').click(function () {
+        var title = $("#input_title").val();
+        var content = $("#input_content").val();
+         var author = $("#input_author").val();
+        if (!title) {
+            alert('标题不能为空');
+            return;
+        }
+        if (!content ) {
+            alert('文本不能为空');
+            return;
+        }
+        if (!author) {
+            alert('作者不能为空');
+            return;
+        }
+        var to = dappContactAddress;
+        var value = "0";
+        var callFunction = "save";
+        var callArgs = "[\"" + title + "\",\"" + content+ "\",\"" + author + "\"]";
+        console.log(callArgs);
+
+        serialNumber = nebPay.call(to, value, callFunction, callArgs, {    //使用nebpay的call接口去调用合约,
+            listener: function (resp) {
+                console.log("thecallback is " + resp)
+            }
+        });
+
+    })
+
+</script>
+
+</html>
