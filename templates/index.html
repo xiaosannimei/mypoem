@@ -5,7 +5,7 @@
     <title>我的诗集</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="./dist/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../static/dist/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 	 <style>
         .logo {
             width: 50%;
@@ -42,17 +42,17 @@
 
 <body>
 
-    <script type="text/javascript" src="./dist/neb/nebulas.js"></script>
-    <script type="text/javascript" src="./dist/neb/nebPay.js"></script>
-    <script type="text/javascript" src="./dist/jquery-3.3.1.min.js"></script>
-    <script type="text/javascript" src="./dist/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/dist/neb/nebulas.js"></script>
+    <script type="text/javascript" src="../static/dist/neb/nebPay.js"></script>
+    <script type="text/javascript" src="../static/dist/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../static/dist/bootstrap/js/bootstrap.min.js"></script>
 
 
     <div class="container contenner">
 		<div class="logo">
 			<div class="name">SUPER DICTIONARY</div>
 			<div class="img logo_rotate">
-				<img src="img/logo.png" alt="星云链">
+				<img src="../static/img/logo.png" alt="星云链">
 			</div>
 		</div>
         <div class="row clearfix">
@@ -197,7 +197,7 @@
         var value = "0";
         var callFunction = "save";
         var callArgs = "[\"" + title + "\",\"" + content+ "\",\"" + author + "\"]";
-        console.log(callArgs);
+        console.log("callArgs "+callArgs);
 
         serialNumber = nebPay.call(to, value, callFunction, callArgs, {    //使用nebpay的call接口去调用合约,
             listener: function (resp) {
